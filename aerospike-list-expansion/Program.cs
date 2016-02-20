@@ -3,13 +3,14 @@ using Aerospike.Client;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 
 namespace aerospikelistexpansion
 {
 	class MainClass
 	{
-		public const string asServerIP = "172.28.128.5";
+		public const string asServerIP = "172.28.128.6";
 		public const int asServerPort = 3000;
 		public const string ns = "test";
 		public const string seqSet = "events";
@@ -29,14 +30,15 @@ namespace aerospikelistexpansion
 		public const int productTotal = 50000;
 		public const string LDT_KEY = "key";
 		public const string LDT_VALUE = "value";
+		public const int days = 50;
 
 		public static void Main (string[] args)
 		{
 			AerospikeClient client = null;
 			try {
 				Console.WriteLine ("INFO: Connecting to Aerospike cluster...");
-
-
+				Stopwatch stopwatch = new Stopwatch();
+				//Thread[] array = new Thread[accountTotal];
 			
 
 
@@ -46,17 +48,19 @@ namespace aerospikelistexpansion
 				// Check to see if the cluster connection succeeded
 				if (client.Connected) {
 					Console.WriteLine("INFO: Connection to Aerospike cluster succeeded!\n");
+					int feature = 0;
+					while (feature != 99) {
 					// Present options
-					Console.WriteLine("What would you like to do:");
-					Console.WriteLine("1> Generate data files for last 3 days");
+					Console.WriteLine("\n\nWhat would you like to do:");
+					Console.WriteLine("1> Generate data files for last "+days+" days");
 					Console.WriteLine("2> Timeseries using sequence");
 					Console.WriteLine("3> Generate Position using CDT and LDT");
 					Console.WriteLine("4> List CDT vs LDT - whole list");
 					Console.WriteLine("5> List CDT vs LDT - one element");
-					Console.WriteLine("0> Exit");
+					Console.WriteLine("99> Exit");
 					Console.Write("\nSelect 0-4 and hit enter:");
-					int feature = int.Parse(Console.ReadLine());
-					if (feature != 0)
+					feature = int.Parse(Console.ReadLine());
+					if (feature != 99)
 					{
 						switch (feature)
 						{
@@ -74,7 +78,7 @@ namespace aerospikelistexpansion
 								
 
 							// write n days
-							for (int dif = 2; dif < 50; dif ++){
+							for (int dif = 2; dif < days; dif ++){
 								DateTime dayBefore = today.AddDays(-dif);
 								Console.WriteLine("Writing: " + dayBefore.ToShortDateString());
 								generateTimeSeries(dayBefore.ToShortDateString(), client);
@@ -82,55 +86,85 @@ namespace aerospikelistexpansion
 							Console.WriteLine("Generating data completed");
 							break;
 						case 3:
-							Console.WriteLine("Generating position data using CDT...");
+							Console.WriteLine("Generating position data using CDT and LDT...");
 							generateCustomerProduct(client);
 							Console.WriteLine("Generating data completed");
 							break;
 						case 4:
-							Stopwatch stopwatch = new Stopwatch();
-
+							
 							Console.WriteLine("CDT vs LDT - Whole list...");
+							int cdtSize = 0;
 							stopwatch.Start();
-							for (int acc = 1; acc <= accountTotal; acc++){
-								getAllProductsCDT(client, acc.ToString());
+							for (int acc = 0; acc < accountTotal; acc++){
+								string accString = (acc+1).ToString();
+								//array[acc] = new Thread(() => getAllProductsCDT(client, accString));
+								//array[acc].Start();
+									cdtSize += getAllProductsCDT(client, accString).Count;
 							}
+							//for (int i = 0; i < accountTotal; i++)
+							//{
+							//	array[i].Join();
+							//}
+							
 							stopwatch.Stop();
-							Console.WriteLine("Completed CDT in: " + stopwatch.ElapsedMilliseconds + "ms");
+							Console.WriteLine("CDT latency: " + stopwatch.ElapsedMilliseconds/accountTotal + "ms for avg list size " + cdtSize/accountTotal);
 
 							stopwatch.Reset();
+							int ldtSize = 0;
 							stopwatch.Start();
-							for (int acc = 1; acc <= accountTotal; acc++){
-								getAllProductsLDT(client, acc.ToString());
+							for (int acc = 0; acc < accountTotal; acc++){
+								
+								string accString = (acc+1).ToString();
+								//array[acc] = new Thread(() => getAllProductsLDT(client, accString));
+								//array[acc].Start();
+								IList res = getAllProductsLDT(client, accString);
+									if (res != null)
+										ldtSize += res.Count;
 							}
+							//for (int i = 0; i < accountTotal; i++)
+							//{
+							//	array[i].Join();
+							//}
 							stopwatch.Stop();
-							Console.WriteLine("Completed LDT in: " + stopwatch.ElapsedMilliseconds + "ms");
+							Console.WriteLine("LDT latency: " + stopwatch.ElapsedMilliseconds/accountTotal + "ms for avg list size " + ldtSize/accountTotal);
 
 							break;
 						case 5:
-							Stopwatch stopwatch = new Stopwatch();
+								const int attempts = 50000; 
+								Console.WriteLine("CDT vs LDT - one element..., {0} attempts", attempts);
+								long cdtTotal = 0, ldtTotal = 0, prodCount = 0;
+								Random accRand = new Random(12121);
+								for (int i = 0; i < 50000; i++){
+										string accString = accRand.Next(1, accountTotal).ToString();
+										Dictionary<string, int> prods = getAllProductsCDT(client, accString);
+										prodCount += prods.Count;
+										foreach (KeyValuePair<string, int> pair in prods){
+											// CDT
+											stopwatch.Start();
+											listCDTFind(client, accString, pair.Key);
+											stopwatch.Stop();
+											cdtTotal += stopwatch.ElapsedMilliseconds;
 
-							Console.WriteLine("CDT vs LDT - one element...");
-							stopwatch.Start();
-							for (int acc = 1; acc <= accountTotal; acc++){
-								getAllProductsCDT(client, acc.ToString());
-							}
-							stopwatch.Stop();
-							Console.WriteLine("Completed CDT in: " + stopwatch.ElapsedMilliseconds + "ms");
+											stopwatch.Reset();
 
-							stopwatch.Reset();
-							stopwatch.Start();
-							for (int acc = 1; acc <= accountTotal; acc++){
-								getAllProductsLDT(client, acc.ToString());
-							}
-							stopwatch.Stop();
-							Console.WriteLine("Completed LDT in: " + stopwatch.ElapsedMilliseconds + "ms");
+											// LDT
+											stopwatch.Start();
+											listCDTFind(client, accString, pair.Key);
+											stopwatch.Stop();
+											ldtTotal += stopwatch.ElapsedMilliseconds;
+
+										}
+								}
+								Console.WriteLine("CDT avg latency: {0:F5} ms", (double)cdtTotal/prodCount);
+								Console.WriteLine("LDT avg latency: {0:F5} ms", (double)ldtTotal/prodCount);
 
 							break;
 						default:
-							Console.WriteLine("\nInvalid Selection\n");
+							
 							break;
 						}
 					}
+						}
 				}
 			} catch (AerospikeException e) {
 				Console.WriteLine ("AerospikeException - Message: " + e.Message);
@@ -147,13 +181,16 @@ namespace aerospikelistexpansion
 			}
 		}
 
+		public static void cats(){
+		}
+
 		public static void generateCustomerProduct(AerospikeClient client){
 			Random products = new Random(2727);
 			Random productsPerAccount = new Random(9898);
 			Random productQuantity = new Random (1919);
 			for (int i = 0; i < accountTotal; i++) {
 				
-				int productsToAdd = productsPerAccount.Next (1, 50);
+				int productsToAdd = productsPerAccount.Next (1, 150);
 				string keyString = i.ToString();
 				Key cdtkey = new Key (ns, cdtSet, keyString);
 				Key ldtkey = new Key (ns, ldtSet, keyString);
@@ -191,14 +228,14 @@ namespace aerospikelistexpansion
 			return products;
 		}
 
-		public static List<object> getAllProductsLDT(AerospikeClient client, string account){
+		public static IList getAllProductsLDT(AerospikeClient client, string account){
 			Key ldtkey = new Key (ns, ldtSet, account);
 			LargeList llist = client.GetLargeList (null, ldtkey, ldtBinName);
-			List<object> result = (List<object> )llist.Scan();
+			IList result = llist.Scan();
 			return result;
 		}
 
-		public static void listCDTFind(AerospikeClient client, string account, string product){
+		public static Dictionary<string, int> listCDTFind(AerospikeClient client, string account, string product){
 			String subKeyString = account + ":" + product;
 			Key subKey = new Key (ns, cdtSet, subKeyString);
 			Dictionary<string, int> foundProduct = new Dictionary<string, int>();
@@ -227,17 +264,13 @@ namespace aerospikelistexpansion
 
 		}
 
-		public static void listLDTFind(AerospikeClient client, string account, string product){
+		public static IList listLDTFind(AerospikeClient client, string account, string product){
 			Key ldtkey = new Key (ns, ldtSet, account);
 			LargeList llist = client.GetLargeList (null, ldtkey, ldtBinName);
+			Dictionary<string, Object> keyMap = makeKeyMap (product);
 
-			llist.Find ();
-			Dictionary<string, int> foundProduct = new Dictionary<string, int>();
-			Record record = client.Get(null, subKey, productPositionBinName, accBinName, prodNameBinName);
-			if (record != null){
-				foundProduct [record.GetString (prodNameBinName)] = record.GetInt (productPositionBinName);
-			}
-			return foundProduct;
+			IList foundProd = llist.Find (Value.Get(keyMap));
+			return foundProd;
 		}
 
 		public static void listLDTAdd(AerospikeClient client, string account, string product, int productAmount){
@@ -252,7 +285,8 @@ namespace aerospikelistexpansion
 			string[] txTypes = {
 				"buy",
 				"bid",
-				"sell"
+				"sell",
+				"cancelled"
 			};
 			string dateString = date.Replace ('/', '-');
 			string fileName = "data/" + dateString + ".csv";
