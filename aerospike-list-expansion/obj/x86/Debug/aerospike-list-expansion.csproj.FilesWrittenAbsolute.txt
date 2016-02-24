@@ -1,7 +1,0 @@
-/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/bin/Debug/aerospike-list-expansion.exe.mdb
-/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/bin/Debug/aerospike-list-expansion.exe
-/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/obj/x86/Debug/aerospike-list-expansion.exe
-/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/obj/x86/Debug/aerospike-list-expansion.exe.mdb
-/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/bin/Debug/Neo.Lua.dll
-/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/bin/Debug/AerospikeClient.dll

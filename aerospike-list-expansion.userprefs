@@ -1,16 +1,19 @@
 ﻿<Properties StartupItem="aerospike-list-expansion/aerospike-list-expansion.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="aerospike-list-expansion/LargeList.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="aerospike-list-expansion/Program.cs">
     <Files>
-      <File FileName="aerospike-list-expansion/Program.cs" Line="263" Column="93" />
-      <File FileName="aerospike-list-expansion/LargeList.cs" Line="34" Column="4" />
+      <File FileName="aerospike-list-expansion/Program.cs" Line="352" Column="48" />
+      <File FileName="aerospike-list-expansion/LargeList.cs" Line="41" Column="16" />
       <File FileName="../aerospike-client-csharp/AerospikeClient/CDT/ListOperation.cs" Line="1" Column="1" />
-      <File FileName="../aerospike-client-csharp/AerospikeClient/Large/LargeList.cs" Line="380" Column="1" />
+      <File FileName="../aerospike-client-csharp/AerospikeDemo/LargeList.cs" Line="81" Column="17" />
+      <File FileName="../aerospike-client-csharp/AerospikeClient/Main/Value.cs" Line="72" Column="1" />
+      <File FileName="../aerospike-client-csharp/AerospikeClient/Main/AerospikeClient.cs" Line="1226" Column="140" />
+      <File FileName="../aerospike-client-csharp/AerospikeDemo/UserDefinedFunction.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/Program.cs" line="273" column="1" />
+      <Breakpoint enabled="false" file="/Users/peter/git/aerospike/Aerospike-list-expansion/aerospike-list-expansion/LargeList.cs" line="100" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
