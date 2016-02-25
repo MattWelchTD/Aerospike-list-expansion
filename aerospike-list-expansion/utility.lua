@@ -1,20 +1,9 @@
 
 -- purge function checks that 
--- the sequence number is 1
--- and all the elements in the CDT list are cancelled
-function purge(topRec)
-	if aerospike:exists(topRec, listBinName, seqBinName) then
-		if topRec[seqBinName] < 2 then
-			local onlyCancelled = false
-			for value in list.iterator[listBinName] do
-				if not string.find (value, "cancelled") then
-					onlyCancelled = true
-					break
-				end
-			end
-			if onlyCancelled then
-				aerospike:remove(topRec)
-			end
-		end
+-- the listBinName is equal to the target date
+-- and delets the record
+function purge(topRec, listBinName, date)
+	if aerospike:exists(topRec) and topRec[listBinName] == date then
+		aerospike:remove(topRec)
 	end
 end

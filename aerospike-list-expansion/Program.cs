@@ -260,11 +260,11 @@ namespace aerospikelistexpansion
 			statement.Namespace = ns;
 			statement.SetName = seqSet;
 
-			statement.SetFilters (Filter.Equal (dayBinName, date));
+			//statement.SetFilters (Filter.Equal (dayBinName, date));
 
 			ExecuteTask task = client.Execute (null, statement, "utility", "purge", 
-								Value.Get(listBinName), 
-								Value.Get(seqBinName));
+				Value.Get(dayBinName),
+				Value.Get(date));
 
 			task.Wait ();
 			stopwatch.Stop ();
