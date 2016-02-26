@@ -100,8 +100,8 @@ namespace aerospikelistexpansion
 									Thread.Sleep(20);
 								}
 
-								client.CreateIndex(null, ns, seqSet, 
-													"day-seq-index", dayBinName, IndexType.STRING);
+//								client.CreateIndex(null, ns, seqSet, 
+//													"day-seq-index", dayBinName, IndexType.STRING);
 								#endregion
 								today = DateTime.Now;
 								today = today.Date;
@@ -266,7 +266,8 @@ namespace aerospikelistexpansion
 				Value.Get(dayBinName),
 				Value.Get(date));
 
-			task.Wait ();
+			while (!task.IsDone())
+				Thread.Sleep (100);
 			stopwatch.Stop ();
 			Console.WriteLine ("Purge completed {0} ms", stopwatch.ElapsedMilliseconds);
 		}

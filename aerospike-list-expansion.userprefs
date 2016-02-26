@@ -2,14 +2,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="aerospike-list-expansion/Program.cs">
     <Files>
-      <File FileName="aerospike-list-expansion/Program.cs" Line="59" Column="58" />
-      <File FileName="aerospike-list-expansion/LargeList.cs" Line="1" Column="1" />
-      <File FileName="../aerospike-client-csharp/AerospikeClient/Main/AerospikeClient.cs" Line="1226" Column="140" />
-      <File FileName="../aerospike-client-csharp/AerospikeDemo/UserDefinedFunction.cs" Line="54" Column="14" />
-      <File FileName="../aerospike-client-csharp/AerospikeDemo/LuaExample.cs" Line="36" Column="25" />
-      <File FileName="../aerospike-client-csharp/AerospikeClient/Task/IndexTask.cs" Line="1" Column="1" />
-      <File FileName="aerospike-list-expansion/utility.lua" Line="1" Column="1" NotebookId="1" />
-      <File FileName="../aerospike-client-csharp/AerospikeClient/Task/RegisterTask.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="aerospike-list-expansion/Program.cs" Line="269" Column="25" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
